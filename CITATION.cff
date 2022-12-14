@@ -1,7 +1,23 @@
 message: "If you use this R analysis and data, please cite it as below"
 authors:
-- family-names:
-  given-names:
+- family-names: Barton
+  given-names: C Michael
+  orchid:
+
+- family-names: Cegielski
+  given-names: Wendy H
+  orchid:
+
+- family-names: Pardo-Gordó
+  given-names: Salvador
+  orchid:
+
+- family-names: Cortell-Nicolau
+  given-names: Alfredo
+  orchid:
+
+- family-names: Diez Castillo
+  given-names: Agustin
   orchid:
 
 title: 
