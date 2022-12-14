@@ -1,6 +1,6 @@
 ---
-title: "Paper Title"
-subtitle: New subtitle
+title: "A Multi-method Approach with Machine Learning to Evaluating the Distribution and Intensity of Prehistoric Land Use in Eastern Iberia"
+subtitle: "R Markdown Scripts for Reproducing Analyses"
 output:
   pdf_document: default
   html_document:
@@ -25,16 +25,32 @@ library(Bchron)
 library(doParallel)
 library(parallel)
 
-ncores <- detectCores()
+ncores <- max(1L, detectCores(), na.rm = TRUE)
 options(Ncpus = ncores)
 ```
+
+
+## Load data
+
+```{r load Medland data}
+# Load Medland survey collection data
+medland_survey2014_2017 <- read_csv("data/medland_survey2014_2017.csv")
+
+# Load training data for Random Forest modeling
+training_data_E_Iberia <- read_csv("data/training_data_E_Iberia.csv", locale = locale(encoding = "ISO-8859-1"))
+
+# Load C14 data for SPD analysis
+C14_SE_Iberia_all <- read_csv("data/C14_S&E_Iberia_all.csv", locale = locale(encoding = "850"))
+
+```
+
 
 # Figures 1 and 2 generated in GIS software
 
 # Figure 3: Surface Visibility and Artifact Recovery
 
 ```{r fig.height=4, fig.width=6}
-medland_survey2 %>% 
+medland_survey2014_2017 %>% 
   dplyr::filter(area.sqm>0 & total.lithics>0 & !is.na(visibility)) %>% 
   mutate(lithic.density=total.lithics/area.sqm) %>% 
   ggplot(aes(x=lithic.density), xlim=.02) + 
@@ -53,64 +69,62 @@ medland_survey2 %>%
 
 ```{r}
 cat("\nCanal de Navarrés survey area\n")
-with(medland_survey2 %>% 
+with(medland_survey2014_2017 %>% 
        dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Canal de Navarrés") %>% 
        mutate(lithic.density=total.lithics/area.sqm), 
   aov(lithic.density~visibility)) %>% summary()
 
 cat("\nHoya de Buñol survey area\n")
-with(medland_survey2 %>% 
+with(medland_survey2014_2017 %>% 
        dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Hoya de Buñol") %>% 
        mutate(lithic.density=total.lithics/area.sqm), 
   aov(lithic.density~visibility)) %>% summary()
 
 cat("\nCocina/Catadau survey area\n")
-with(medland_survey2 %>% 
+with(medland_survey2014_2017 %>% 
        dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Cocina/Catadau") %>% 
        mutate(lithic.density=total.lithics/area.sqm), 
   aov(lithic.density~visibility)) %>% summary()
 ```
 
 
-# Random Forest Model for Chronological Unmixing
+# Random Forest Model for Chronological Unmixing (Figure 4 and Table 4)
 
 ## Data preparation
 
-### Load data for Valencia dated assemblages
+### Prepare data for Valencia dated assemblages
 
-```{r load training data}
-training_data <- read_csv("data/training_data.csv", locale = locale(encoding = "ISO-8859-1"))
+```{r prepare training data}
+
 
 # Modify training data based on ML and Bayesian testing: 
 #  Merge ENEOL and MNEOL
 #  Remove undiagnostic lithics for age estimates
 #  Sort factor levels chronologically 
 
-training_data <- training_data %>% 
+training_data_E_Iberia <- training_data_E_Iberia %>% 
   select(-undiag.lithics, -total.lithics, -citation) %>% 
   mutate(period = replace(period, period == "MNEOL", "ENEOL"), 
          period = factor(period,
                          levels = c("MP", "UP", "EPI", "MESO", "ENEOL", "LNEOL")))
 ```
 
-### Load Medland survey collection data
 
-```{r load Medland data}
-medland_survey2 <- read_csv("data/medland_survey2.csv")
-```
-
-### Prepare data from survey collections
+### Prepare data from survey collections for applying Random Forest model
 ```{r prepare Medland data}
-medland_survey2_lithics <- medland_survey2 %>% 
+# filter out assemblages with only undiagnostic lithics
+medland_survey2014_2017_lithics <- medland_survey2014_2017 %>% 
   dplyr::filter(undiag.lithics < total.lithics) %>% 
   select(ID, c(13:27))
 
-medland_survey2_info <- medland_survey2 %>% 
+# make separate table of assemblage ID and provenience
+medland_survey2014_2017_info <- medland_survey2014_2017 %>% 
   dplyr::filter(undiag.lithics < total.lithics) %>% 
   mutate(assemblage = paste(study.area, "-", zone, "-", sector, "-", subsector, sep = "")) %>% 
   select(ID, study.area, assemblage)
 
-medland_survey2_density <- medland_survey2 %>% 
+# calculate lithic density for each collection patch
+medland_survey2014_2017_density <- medland_survey2014_2017 %>% 
   dplyr::filter(undiag.lithics < total.lithics) %>% 
   mutate(assemblage = paste(study.area, "-", zone, "-", sector, "-", subsector, sep = ""), 
          density.km2 = total.lithics*1000/area.sqm)%>% 
@@ -119,10 +133,10 @@ medland_survey2_density <- medland_survey2 %>%
 
 ### Split data into training and test sets
 
-```{r training & test data}
+```{r split training & test data}
 # Partition into training and hold out test / validation sample
 set.seed(456) ## if we want to make it completely reproducible
-vl.split <- training_data %>% 
+vl.split <- training_data_E_Iberia %>% 
   rsample::initial_split(., prop=.75)
 
 vl.train <- rsample::training(vl.split)
@@ -134,12 +148,13 @@ vl.test.id <- vl.test %>%
 
 ```
 
+
 ### create v-fold objects for replicable and comparable cross-validation
 
 10 folds using all the training data
 ```{r vfold10 all}
 set.seed(456)
-vf10.all <- vfold_cv(training_data %>% select(-ID),v=10)
+vf10.all <- vfold_cv(training_data_E_Iberia %>% select(-ID),v=10)
 ```
 
 10 folds using the 75% training data split
@@ -174,7 +189,7 @@ valencia.lithics.rf.fit <-
 print(valencia.lithics.rf.fit)
 ```
 
-#### Graph variable importance for random forest model with training set
+#### Optional graph: variable importance for random forest model with training set
 
 ```{r}
 valencia.lithics.rf.fit %>% 
@@ -269,7 +284,7 @@ print(valencia.lithics.rf.xv.meanpreds)
 
 ```{r RF VIP all}
 valencia.lithics.rf.mod %>% 
-  fit(as.factor(period) ~ ., data = training_data[,2:ncol(training_data)]) %>% 
+  fit(as.factor(period) ~ ., data = training_data_E_Iberia[,2:ncol(training_data_E_Iberia)]) %>% 
   extract_fit_engine() %>% 
   vip(aesthetics = list(color = "black", fill = "#26ACB5"), num_features = 15) + 
   theme_minimal()
@@ -291,7 +306,7 @@ valencia.lithics.rf.xv.predictions <- collect_predictions(valencia.lithics.rf.xv
          true.age=period) %>% 
   select(-.row, -.config) %>% 
   relocate(predicted.age, .after = true.age) %>% 
-  bind_cols(training_data[1], .)
+  bind_cols(training_data_E_Iberia[1], .)
 
 print(valencia.lithics.rf.xv.predictions)
 ```
@@ -325,6 +340,7 @@ caret::confusionMatrix(
   as.factor(valencia.lithics.rf.xv.predictions$predicted.age))
 ```
 
+
 ## Create random forest model from all training data to estimate ages of surface collections from survey
 
 ### Define and instantiate a Random Forest model using all the known training data
@@ -343,7 +359,7 @@ print(medland.survey.rf.mod)
 ```{r Medland RF fit model}
 medland.survey.rf.fit <- 
   medland.survey.rf.mod %>% 
-  fit(as.factor(period) ~ ., data = training_data[,2:ncol(training_data)])
+  fit(as.factor(period) ~ ., data = training_data_E_Iberia[,2:ncol(training_data_E_Iberia)])
 
 print(medland.survey.rf.fit)
 ```
@@ -353,9 +369,9 @@ print(medland.survey.rf.fit)
 ```{r Medland RF extract model fit}
 medland.survey.rf.predicted <- 
   medland.survey.rf.fit %>% 
-  predict(medland_survey2_lithics) %>% 
-  bind_cols(medland_survey2_info, ., 
-            predict(medland.survey.rf.fit, medland_survey2_lithics, type="prob")) %>% 
+  predict(medland_survey2014_2017_lithics) %>% 
+  bind_cols(medland_survey2014_2017_info, ., 
+            predict(medland.survey.rf.fit, medland_survey2014_2017_lithics, type="prob")) %>% 
   rename(predicted.period = .pred_class, 
          MP=.pred_MP,
          UP=.pred_UP,
@@ -383,7 +399,7 @@ print(paste("10th percentile of random forest probabilities =",
 
 ```
 
-### Optional Graph: quantile for random forest probabilities
+### Optional Graph: show quantiles for random forest probabilities
 
 ```{r}
 # show this in a graph
@@ -401,12 +417,12 @@ valencia.lithics.rf.xv.predictions %>%
 
 ```
 
-### Create files for graphing and for output
+### Create files for additional graphing and for output for mapping
 
 ```{r Medland RF file for graphing}
 # Create base file for graphing and output
 medland.survey.rf.graph <-  
-  left_join(select(medland_survey2, ID, study.area, zone, sector, subsector, total.lithics, area.sqm) %>% 
+  left_join(select(medland_survey2014_2017, ID, study.area, zone, sector, subsector, total.lithics, area.sqm) %>% 
             mutate(assemblage = paste(study.area, "-", zone, "-", sector, "-", subsector, sep = "")), 
             medland.survey.rf.predicted) %>% 
   dplyr::filter(total.lithics>0) %>% 
@@ -537,56 +553,18 @@ ggplot(aes(x=period, y=ubiquity*density.km2/duration.centuries)) +
 ```
 
 
-#### Save random forest dating file to csv
+#### Save random forest dating file to csv for mappoing in GIS
 
 ```{r Medland RF output}
 write_csv(medland.survey.rf.out, "medland_survey_rf.csv")
 ```
 
-# Figure 3: Surface Visibility and Artifact Recovery
-
-```{r fig.height=4, fig.width=6}
-medland_survey2 %>% 
-  dplyr::filter(area.sqm>0 & total.lithics>0 & !is.na(visibility)) %>% 
-  mutate(lithic.density=total.lithics/area.sqm) %>% 
-  ggplot(aes(x=lithic.density), xlim=.02) + 
-  geom_histogram(binwidth = .001) + 
-  scale_y_log10() + 
-  scale_x_continuous(limits = c(0,0.01), breaks = c(0,.002, .004, .006, .008)) + 
-  labs(title = "Surface Visibility and Artifact Recovery",
-       x="lithic artifacts / km^2",
-       y='count of patches') + 
-  facet_grid(factor(visibility)~study.area) + 
-  theme_bw(base_size = 20) + 
-  theme(axis.title.x = element_markdown())
-```
-
-## ANOVA: all survey areas and each survey area
-```{r}
-cat("\nCanal de Navarrés survey area\n")
-with(medland_survey2 %>% 
-       dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Canal de Navarrés") %>% 
-       mutate(lithic.density=total.lithics/area.sqm), 
-  aov(lithic.density~visibility)) %>% summary()
-
-cat("\nHoya de Buñol survey area\n")
-with(medland_survey2 %>% 
-       dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Hoya de Buñol") %>% 
-       mutate(lithic.density=total.lithics/area.sqm), 
-  aov(lithic.density~visibility)) %>% summary()
-
-cat("\nCocina/Catadau survey area\n")
-with(medland_survey2 %>% 
-       dplyr::filter(total.lithics>0 & !is.na(visibility) & study.area == "Cocina/Catadau") %>% 
-       mutate(lithic.density=total.lithics/area.sqm), 
-  aov(lithic.density~visibility)) %>% summary()
-```
 
 ## Aggregate summaries of ubiquity and intensity for each valley
 
 ### Calcuate area surveyed totals for each valley
 ```{r}
-totals.surveyed <- medland_survey2 %>% 
+totals.surveyed <- medland_survey2014_2017 %>% 
   select(study.area, area.sqm) %>% 
   group_by(study.area) %>% 
   summarise(total.area.sqm=sum(area.sqm))
@@ -624,7 +602,7 @@ left_join(medland.survey.rf.graph, totals.surveyed) %>%
           total.area.sqm = 1551377,
           pct.coverage = 0) %>% 
 
-# Needed for upper quartile graphing   
+# Needed for optional upper quartile graphing   
   # add_row(study.area = "Canal de Navarrés",
   #         period = "MP",
   #         area.sum = 0,
@@ -703,7 +681,7 @@ left_join(medland.survey.rf.graph, totals.surveyed) %>%
           total.area.sqm = 1551377,
           pct.coverage = 0) %>% 
     
-# Needed for upper quartile graphing
+# Needed for optional upper quartile graphing
   # add_row(study.area = "Hoya de Buñol",
   #         period = "UP",
   #         area.sum = 0,
@@ -725,12 +703,9 @@ left_join(medland.survey.rf.graph, totals.surveyed) %>%
 
 # Figure 11: SPD Analyses of Prehistoric Demography
 
-## Load Data
+## Prepare Data
 Only use dates with COV ≤ 0.05
 ```{r}
-pleist_early_holo <- read_csv("data/C14_S&E-Iberia_Pleistocene-Holocene.csv")
-
-C14_SE_Iberia_all <- read_csv("data/C14_S&E-Iberia_all.csv", locale = locale(encoding = "850"))
 C14_SE_Iberia_all <- C14_SE_Iberia_all %>% dplyr::filter(C14.CV<0.05 & C14.SD>0)
 ```
 
