@@ -2,7 +2,8 @@
 title: "A Multi-method Approach with Machine Learning to Evaluating the Distribution and Intensity of Prehistoric Land Use in Eastern Iberia"
 subtitle: "R Markdown Scripts for Reproducing Analyses"
 output:
-  pdf_document: default
+  html_notebook: default
+  pdf_document: 
   html_document:
     df_print: paged
 ---
@@ -484,7 +485,7 @@ medland.survey.rf.graph <-  medland.survey.rf.graph %>%
 
 ### Optional Graph: occupational ubiquity for all survey patches with diagnostic lithics
                          
-```{r Medland RF graph predictions, fig.height=12, fig.width=10, warning=FALSE}
+```{r Medland RF graph ubiquity predictions, fig.height=12, fig.width=10, warning=FALSE}
 medland.survey.rf.graph %>% 
   ggplot(aes(x=period, y=ubiquity)) + 
   geom_rect(aes(fill = study.area),xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf,alpha = 0.1) +
@@ -501,7 +502,7 @@ medland.survey.rf.graph %>%
 
 ### Optional Graph: land use intensity for all survey patches with diagnostic lithics
                          
-```{r Medland RF graph predictions, fig.height=12, fig.width=10, warning=FALSE}
+```{r Medland RF graph intensity predictions, fig.height=12, fig.width=10, warning=FALSE}
 medland.survey.rf.graph %>% 
   ggplot(aes(x=period, y=ubiquity*density.km2/duration.centuries)) + 
   geom_rect(aes(fill = study.area),xmin = -Inf,xmax = Inf, ymin = -Inf,ymax = Inf,alpha = 0.1) +
