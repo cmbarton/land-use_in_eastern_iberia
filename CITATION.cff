@@ -1,5 +1,5 @@
 message: "If you use this R analysis and data, please cite it as below"
-type: data
+type: dataset
 authors:
 - family-names: "Barton"
   given-names: "C Michael"
