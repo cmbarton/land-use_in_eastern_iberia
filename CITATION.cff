@@ -26,36 +26,3 @@ title: "Data and Analysis for paper: A Multi-method Approach with Machine Learni
 doi: "not yet available"
 date-released: "not yet available"
 url: "https://github.com/cmbarton/land-use_in_eastern_iberia"
-preferred-citation:
-  type: article
-  authors:
-  - family-names: "Cegielski"
-    given-names: "Wendy H"
-    orchid:
-  - family-names: "Snitker"
-    given-names: "Grant"
-    orcid: "0000-0003-3548-2241"
-  - family-names: "Barton"
-    given-names: "C Michael"
-    orcid: "0000-0003-2561-1927"
-  - family-names: Cortell-Nicolau
-    given-names: Alfredo
-    orchid: "0000-0003-1982-6403"
-  - family-names: Pardo-Gordó
-    given-names: nSalvador
-    orchid: "0000-0002-1060-1526"
-  - family-names: "Bergin"
-    given-names: "Sean M"
-    orcid: "0000-0001-9576-7914"
-  - family-names: "Diez Castillo"
-    given-names: "Agustin"
-    orcid: "0000-0001-9122-2941"
-  doi: "10.0000/00000"
-  journal: "Quaternary International"
-  month: 0
-  start: 1 # First page number
-  end: 10 # Last page number
-  title: "A Multi-method Approach with Machine Learning to Evaluating the Distribution and Intensity of Prehistoric Land Use in Eastern Iberia"
-  issue: 0
-  volume: 0
-  year: 2023
