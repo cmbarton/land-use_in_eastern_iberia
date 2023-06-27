@@ -38,10 +38,10 @@ options(Ncpus = ncores)
 medland_survey2014_2017 <- read_csv("data/medland_survey2014_2017.csv")
 
 # Load training data for Random Forest modeling
-training_data_E_Iberia <- read_csv("data/training_data_E_Iberia.csv", locale = locale(encoding = "ISO-8859-1"))
+training_data_E_Iberia <- read_csv("data/training_data_E_Iberia.csv")
 
 # Load C14 data for SPD analysis
-C14_SE_Iberia_all <- read_csv("data/C14_S&E_Iberia_all.csv", locale = locale(encoding = "850"))
+C14_SE_Iberia_all <- read_csv("data/C14_SE_Iberia_all.csv")
 
 ```
 
