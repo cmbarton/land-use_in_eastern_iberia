@@ -48,8 +48,10 @@ __Description of Lithic Types__
 | bifacial.pt	| bifacial points	| bifacial projectile points (all forms) |
 | dent.sickle	| denticulated sickle blades	| denticulated sickle blades (usually with silica sheen) |
 
-## GIS Files
+## GIS Files of Survey, Sampling Protocol, and Interpolation for Occupational Ubiquity and Land Use Intensity
 In ESRI shapefile format. Polygons of all surveyed patches in 3 valleys in eastern Spain. See paper for more information.
+
+For each of the 3 study areas (Canal de Navarrés, Hoya de Buñol, & Cocina-Catadau), there are shapefiles for each study area, zones (sampling strata), and subsectors (survey patches). For Navarrés and Buñol there are also files for sectors (survey blocks).
 
 ### Metadata for GIS Files
 __study.area:__ valley surveyed
@@ -57,6 +59,20 @@ __zone:__ sampling stratum
 __sector:__ survey block
 __subsector:__ survey patch/collection unit
 
+### Spatial Interpolation for Occupational Ubiquity and Land Use Intensity
+Chronological unmixing created probability values for ubiquity and intensity for each survey patch with artifacts, linked with the coordinates of the center point of each survey patch (see published paper and R scripts included here). Points generated from the center point coordinates were used to create raster maps of ubiquity and intensity using bilinear spline interpolation for each time period within each study area. The interpolation was carried out in GRASS GIS version 7.4.4 with the _v.surf.bspline_ module. This can be done in the GRASS GUI or on the command line. The relevant command is:
+
+__v.surf.bspline input=_[points file]_ column=_[probabilities]_ raster_output=_[interpolated raster]_ ew_step=300 ns_step=300__
+
+where...
+* _[points file]_ is the name of the GIS file of survey patch center points that also has ubiquity and intensity probabilities for each time period.
+* _[probabilities]_ is the column of probability values to interpolate (i.e., ubiquity or intensity for each time period).
+* _[interpolated raster]_ is the name of the raster file created through interpolation.
+
+After interpolation, each raster was filtered to remove any negative probability values generate by the spline algorithm using the following GRASS raster map calculator command.
+
+__r.mapcalc expression="_[filtered raster]_ = ( ( _[interpolated raster]_ >= 0 ) * _[interpolated raster]_ )"__
+
 ## R scripts
-* __land-use_in_E-Iberia.Rmd:__ R-Markdown script to carry out Random Forest analyses and generate age estimates of assemblages, and SPD (summed probability distribution) analysis of radiocarbon dates from eastern and southern Iberia
+* __land-use_in_E-Iberia.Rmd:__ R-Markdown script to carry out visibility analyses, Random Forest analyses to calculate age estimates of assemblages, and SPD (summed probability distribution) analysis of radiocarbon dates from eastern and southern Iberia
 * __land-use_in_E-Iberia.nb.html:__ HTML output file of analyses carried out with R-Markdown script
