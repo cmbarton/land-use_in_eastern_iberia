@@ -54,10 +54,13 @@ In ESRI shapefile format. Polygons of all surveyed patches in 3 valleys in easte
 For each of the 3 study areas (Canal de Navarrés, Hoya de Buñol, & Cocina-Catadau), there are shapefiles for each study area, zones (sampling strata), and subsectors (survey patches). For Navarrés and Buñol there are also files for sectors (survey blocks).
 
 ### Metadata for GIS Files
-__study.area:__ valley surveyed
-__zone:__ sampling stratum
-__sector:__ survey block
-__subsector:__ survey patch/collection unit
+__study.area:__ valley surveyed  
+__zone:__ sampling stratum  
+__sector:__ survey block  
+__subsector:__ survey patch/collection unit  
+
+These columns are followed in the _patches_ files with counts of each lithic artifact type collected from that patch.  
+The R script listed below uses a Random Forest model to estimate the probability values of Occupational Ubiquity and Land Use Intensity for each patch with artifacts.  
 
 ### Spatial Interpolation for Occupational Ubiquity and Land Use Intensity
 Chronological unmixing created probability values for ubiquity and intensity for each survey patch with artifacts, linked with the coordinates of the center point of each survey patch (see published paper and R scripts included here). Points generated from the center point coordinates were used to create raster maps of ubiquity and intensity using bilinear spline interpolation for each time period within each study area. The interpolation was carried out in GRASS GIS version 7.4.4 with the _v.surf.bspline_ module. This can be done in the GRASS GUI or on the command line. The relevant command is:
