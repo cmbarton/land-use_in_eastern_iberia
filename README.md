@@ -6,7 +6,7 @@ Data and R markdown script supporting analyses described in the paper:
 Cegielski, W.H., Snitker, G., Barton, C.M., Cortell Nicolau, A., Pardo Gordò, S., Bergin, S.M., Diez Castillo, A., 2023. A multi-method approach with machine learning to evaluating the distribution and intensity of prehistoric land use in eastern Iberia. _Quaternary International_ In press.
 
 ## Data files include:
-(All data in Unicode UTF-8 character set)
+(All data in Unicode UTF-8 character set. Quotes around long strings that may contain comma delimter)
 
 * __medland_survey2014_2017.csv:__ lithic surface collections from surveys in 3 study areas.
 * __training_data_E_Iberia.csv:__ lithic assemblages from excavation, dated contexts in eastern Iberia. These data were used for training the Random Forest model used for chronological unmixing.
@@ -49,9 +49,7 @@ __Description of Lithic Types__
 | dent.sickle	| denticulated sickle blades	| denticulated sickle blades (usually with silica sheen) |
 
 ## GIS Files of Survey, Sampling Protocol, and Interpolation for Occupational Ubiquity and Land Use Intensity
-In ESRI shapefile format. Polygons of all surveyed patches in 3 valleys in eastern Spain. See paper for more information.
-
-For each of the 3 study areas (Canal de Navarrés, Hoya de Buñol, & Cocina-Catadau), there are shapefiles for each study area, zones (sampling strata), and subsectors (survey patches). For Navarrés and Buñol there are also files for sectors (survey blocks).
+In ESRI shapefile format. Polygons of survey patches ("subsectors") and sampling strata ("zones") for each of the 3 study areas (Canal de Navarrés, Hoya de Buñol, & Cocina-Catadau) in eastern Spain. Also polygons of survey blocks ("sectors") for Navarrés and Buñol study areas. See paper for more information.  
 
 ### Metadata for GIS Files
 __study.area:__ valley surveyed  
