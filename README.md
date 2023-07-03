@@ -49,7 +49,7 @@ __Description of Lithic Types__
 | dent.sickle	| denticulated sickle blades	| denticulated sickle blades (usually with silica sheen) |
 
 ## GIS Files of Survey, Sampling Protocol, and Interpolation for Occupational Ubiquity and Land Use Intensity
-In ESRI shapefile format. Polygons of survey patches ("subsectors") and sampling strata ("zones") for each of the 3 study areas (Canal de Navarrés, Hoya de Buñol, & Cocina-Catadau) in eastern Spain. Also polygons of survey blocks ("sectors") for Navarrés and Buñol study areas. See paper for more information.  
+In ESRI shapefile format: polygons of survey patches ("subsectors"), survey blocks ("sectors"), and sampling strata ("zones"). There is only a single sampling stratum (zone) for Hoya de Buñol. Sectors were only defined for Zone 3 in the Cocina-Catadau study area. See paper for more information.  
 
 ### Metadata for GIS Files
 __study.area:__ valley surveyed  
