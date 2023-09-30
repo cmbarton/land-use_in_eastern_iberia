@@ -3,7 +3,7 @@
 
 Data and R markdown script supporting analyses described in the paper:
 
-Cegielski, W.H., Snitker, G., Barton, C.M., Cortell Nicolau, A., Pardo Gordò, S., Bergin, S.M., Diez Castillo, A., 2023. A multi-method approach with machine learning to evaluating the distribution and intensity of prehistoric land use in eastern Iberia. _Quaternary International_ In press.
+Cegielski, W.H., Snitker, G., Barton, C.M., Bernabeu Aubán, J. Cortell Nicolau, A., Pardo Gordò, S., Bergin, S.M., Diez Castillo, A., 2023. A multi-method approach with machine learning to evaluating the distribution and intensity of prehistoric land use in eastern Iberia. _Quaternary International_ In press.
 
 ## Data files include:
 (All data in Unicode UTF-8 character set. Quotes around long strings that may contain comma delimter)

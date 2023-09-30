@@ -7,10 +7,13 @@ authors:
   orcid: "0000-0003-2561-1927"
 - family-names: "Cegielski"
   given-names: "Wendy H"
-  orchid:
+  orchid: "0000-0002-6426-8829"
 - family-names: "Snitker"
   given-names: "Grant"
   orcid: "0000-0003-3548-2241"
+- family-names: "Bernabeu Auban"
+  given-names: "Joan"
+  orcid: "0000-0002-5742-8708"
 - family-names: Pardo-Gordó
   given-names: nSalvador
   orchid: "0000-0002-1060-1526"
@@ -23,7 +26,7 @@ authors:
 - family-names: "Bergin"
   given-names: "Sean M"
   orcid: "0000-0001-9576-7914"
-title: "Data and Analysis for paper in Quaternary International: A Multi-method Approach with Machine Learning to Evaluating the Distribution and Intensity of Prehistoric Land Use in Eastern Iberia, by W. Cegielski"
+title: "Data and Analysis for paper in Quaternary International: A Multi-method Approach with Machine Learning to Evaluating the Distribution and Intensity of Prehistoric Land Use in Eastern Iberia, by W. Cegielski et al."
 doi: "https://doi.org/10.5281/zenodo.8096982"
 date-released: "June 2023"
 url: "https://github.com/cmbarton/land-use_in_eastern_iberia"
